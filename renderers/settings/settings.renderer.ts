@@ -64,6 +64,7 @@ export class Settings {
 				main.persistence.data.DIAL.enabled = settings.DIAL.enabled;
 				main.persistence.data.DIAL.name = settings.DIAL.name;
 				main.persistence.data.background = settings.background;
+				main.persistence.data.adBlock = settings.adBlock;
 				main.persistence.data.userAgent.customUA = settings.userAgent.customUA;
 
 				// Si DIAL está activado.

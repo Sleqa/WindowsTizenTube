@@ -40,6 +40,11 @@
                 "title": "Background mode",
                 "sidebar_title": "Background",
                 "explanation_1": "YouTube TV will stay minimized and switch to full screen when a device connects."
+            },
+            "adBlock": {
+                "title": "Ad block",
+                "sidebar_title": "Ad block",
+                "explanation_1": "Blocks ads and trackers inside YouTube TV. Restart the app for changes to take effect."
             }
         }
     },

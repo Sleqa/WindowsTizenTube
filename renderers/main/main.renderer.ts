@@ -13,7 +13,6 @@ import { app,
          ipcMain, 
          session} from 'electron';
 import { DataModel } from '../../models/data.interface';
-import main from '../../main';
 
 export interface resolution {
 
@@ -73,7 +72,7 @@ export class Renderer {
     /** JavaScript injection title bar styles */
     private titleBar: string = '';
 
-    constructor(private _data: Pick<DataModel, 'keepSize' | 'resolution'>) {
+    constructor(private _data: Pick<DataModel, 'keepSize' | 'resolution' | 'adBlock'>) {
 
         app.on('ready', async() => {
             
@@ -90,7 +89,7 @@ export class Renderer {
                 console.log(err)
             }
 
-            if(main.DEVMODE) this.enableAdBlock();
+            if(this._data.adBlock) this.enableAdBlock();
             
             this.createWindow();
     
@@ -347,21 +346,17 @@ export class Renderer {
     }
 
     private enableAdBlock() {
-        // Comprobación para que no se cuele el adblock en producción.
-        if(process.title.endsWith('Electron')) {
-            try {
-                const { ElectronBlocker } = require('@ghostery/adblocker-electron');
-                ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
-                .then((_:any) => {
-                    _.enableBlockingInSession(session.defaultSession);
-                })
-                .catch((err:any) => {
-                    console.error(err)
-                })
-            } catch(err) {
-                
-            }
-
+        try {
+            const { ElectronBlocker } = require('@ghostery/adblocker-electron');
+            ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
+            .then((_:any) => {
+                _.enableBlockingInSession(session.defaultSession);
+            })
+            .catch((err:any) => {
+                console.error(err)
+            })
+        } catch(err) {
+            console.error(err)
         }
     }
 
