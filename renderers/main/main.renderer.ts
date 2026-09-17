@@ -69,6 +69,9 @@ export class Renderer {
     /** JavaScript injection code */
     private jsic: string = '';
 
+    /** JavaScript gamepad-to-keyboard bridge code */
+    private gamepadPatch: string = '';
+
     /** JavaScript injection title bar styles */
     private titleBar: string = '';
 
@@ -206,16 +209,22 @@ export class Renderer {
                 this.jsic = await readFile(join(__dirname, 'injection.js'), { encoding: 'utf8' });
             }
 
+            if (this.gamepadPatch === '') {
+                this.gamepadPatch = await readFile(join(__dirname, 'gamepad.js'), { encoding: 'utf8' });
+            }
+
             if (platform() === 'darwin' && this.titleBar === '') {
                 this.titleBar = await readFile(join(__dirname, 'titleBar.js'), { encoding: 'utf8' });
             }
 
             if (script === 'all') {
                 this.window.webContents.executeJavaScript(this.jsic);
+                this.window.webContents.executeJavaScript(this.gamepadPatch);
                 platform() === 'darwin' ? this.window.webContents.executeJavaScript(this.titleBar) : false;
-                
+
             } else if (script === 'patchs') {
                 this.window.webContents.executeJavaScript(this.jsic);
+                this.window.webContents.executeJavaScript(this.gamepadPatch);
 
             } else if (script === 'titlebar') {
                 platform() === 'darwin' ? this.window.webContents.executeJavaScript(this.titleBar) : false;
