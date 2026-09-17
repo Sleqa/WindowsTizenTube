@@ -1,7 +1,7 @@
 {
     "name": "youtube-tv",
     "productName": "YouTube TV",
-    "version": "3.0.1",
+    "version": "3.1.0",
     "description": "Simple YouTube TV client for desktop based on electron.",
     "main": "main.js",
     "scripts": {
@@ -37,6 +37,12 @@
         "afterPack": "./build/hooks/castlabs-sign.js",
         "directories": {
             "output": "../YTV_Builds"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "Sleqa",
+            "repo": "WindowsTizenTube",
+            "releaseType": "release"
         },
         "extraResources": [
             {
