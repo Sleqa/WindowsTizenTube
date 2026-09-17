@@ -40,6 +40,11 @@
                 "title": "Segundo plano",
                 "sidebar_title": "Segundo plano",
                 "explanation_1": "YouTube TV se mantendrá minimizado y se pondrá a pantalla completa cuando algún dispositivo se conecte."
+            },
+            "adBlock": {
+                "title": "Bloqueo de anuncios",
+                "sidebar_title": "AdBlock",
+                "explanation_1": "Bloquea anuncios y rastreadores dentro de YouTube TV. Reinicia la aplicación para que los cambios surtan efecto."
             }
         }
     },

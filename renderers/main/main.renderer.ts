@@ -13,7 +13,6 @@ import { app,
          ipcMain, 
          session} from 'electron';
 import { DataModel } from '../../models/data.interface';
-import main from '../../main';
 
 export interface resolution {
 
@@ -70,10 +69,13 @@ export class Renderer {
     /** JavaScript injection code */
     private jsic: string = '';
 
+    /** JavaScript gamepad-to-keyboard bridge code */
+    private gamepadPatch: string = '';
+
     /** JavaScript injection title bar styles */
     private titleBar: string = '';
 
-    constructor(private _data: Pick<DataModel, 'keepSize' | 'resolution'>) {
+    constructor(private _data: Pick<DataModel, 'keepSize' | 'resolution' | 'adBlock'>) {
 
         app.on('ready', async() => {
             
@@ -90,7 +92,7 @@ export class Renderer {
                 console.log(err)
             }
 
-            if(main.DEVMODE) this.enableAdBlock();
+            if(this._data.adBlock) this.enableAdBlock();
             
             this.createWindow();
     
@@ -207,16 +209,22 @@ export class Renderer {
                 this.jsic = await readFile(join(__dirname, 'injection.js'), { encoding: 'utf8' });
             }
 
+            if (this.gamepadPatch === '') {
+                this.gamepadPatch = await readFile(join(__dirname, 'gamepad.js'), { encoding: 'utf8' });
+            }
+
             if (platform() === 'darwin' && this.titleBar === '') {
                 this.titleBar = await readFile(join(__dirname, 'titleBar.js'), { encoding: 'utf8' });
             }
 
             if (script === 'all') {
                 this.window.webContents.executeJavaScript(this.jsic);
+                this.window.webContents.executeJavaScript(this.gamepadPatch);
                 platform() === 'darwin' ? this.window.webContents.executeJavaScript(this.titleBar) : false;
-                
+
             } else if (script === 'patchs') {
                 this.window.webContents.executeJavaScript(this.jsic);
+                this.window.webContents.executeJavaScript(this.gamepadPatch);
 
             } else if (script === 'titlebar') {
                 platform() === 'darwin' ? this.window.webContents.executeJavaScript(this.titleBar) : false;
@@ -347,21 +355,17 @@ export class Renderer {
     }
 
     private enableAdBlock() {
-        // Comprobación para que no se cuele el adblock en producción.
-        if(process.title.endsWith('Electron')) {
-            try {
-                const { ElectronBlocker } = require('@ghostery/adblocker-electron');
-                ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
-                .then((_:any) => {
-                    _.enableBlockingInSession(session.defaultSession);
-                })
-                .catch((err:any) => {
-                    console.error(err)
-                })
-            } catch(err) {
-                
-            }
-
+        try {
+            const { ElectronBlocker } = require('@ghostery/adblocker-electron');
+            ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
+            .then((_:any) => {
+                _.enableBlockingInSession(session.defaultSession);
+            })
+            .catch((err:any) => {
+                console.error(err)
+            })
+        } catch(err) {
+            console.error(err)
         }
     }
 

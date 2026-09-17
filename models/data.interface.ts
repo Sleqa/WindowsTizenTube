@@ -31,6 +31,8 @@ export interface DataModel {
         name: string
     },
     background: boolean,
+    /** Bloquea anuncios y rastreadores dentro de YouTube TV. */
+    adBlock: boolean,
     userAgent: {
         useCustomUA: boolean,
         customUA: string

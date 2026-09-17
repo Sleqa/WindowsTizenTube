@@ -57,7 +57,7 @@ export class UIRenderer {
     private focusedUIElement: UIElement | null;
 
     private hiddenSectionsVisible: boolean = false;
-    private hiddenSections = ['background', 'extensions', 'advanced']
+    private hiddenSections = ['background', 'advanced']
 
     constructor(private settings: DataModel) {
 
@@ -67,6 +67,7 @@ export class UIRenderer {
         this.renderKeepSizeSection();
         this.renderDialSection();
         this.renderBackgroundSection();
+        this.renderAdBlockSection();
 
         this.focusedSectionName = 'resolution'
         this.append();
@@ -135,7 +136,22 @@ export class UIRenderer {
         this.sections.background = new UISelectElement();
         (this.sections.background as UISelectElement).init(background, [true, false]);
         this.sections.background.onChange = this.onSave.bind(this);
-        
+
+    }
+
+    private renderAdBlockSection() {
+
+        const { adBlock } = this.settings;
+
+        const { title, sidebar_title, explanation_1 } = main.i18n.sections.adBlock;
+        (document.querySelector('#extensions')?.children[1]! as HTMLSpanElement).textContent = sidebar_title;
+        (document.querySelector('#extensions-section')?.children[0]!.children[1] as HTMLHeadElement).textContent = title;
+        (document.querySelector('#extensions-section')?.children[1]!.children[0]! as HTMLParagraphElement).textContent = explanation_1;
+
+        this.sections.extensions = new UISelectElement();
+        (this.sections.extensions as UISelectElement).init(adBlock, [true, false]);
+        this.sections.extensions.onChange = this.onSave.bind(this);
+
     }
 
     private append() {
@@ -144,19 +160,21 @@ export class UIRenderer {
         const keepSizeSection = document.querySelector('#keepsize-section') as HTMLElement;
         const dialSection = document.querySelector('#dial-section') as HTMLElement;
         const backgroundSection = document.querySelector('#background-section') as HTMLElement;
-        
+        const extensionsSection = document.querySelector('#extensions-section') as HTMLElement;
+
         resolutionSection.appendChild(this.sections.resolution as UIElement);
         keepSizeSection.appendChild(this.sections.keepSize as UIElement);
         dialSection.appendChild(((this.sections.dial as UIElement[])[0] as UIElement));
         dialSection.appendChild(((this.sections.dial as UIElement[])[1] as UIElement));
         backgroundSection.appendChild(this.sections.background as UIElement);
+        extensionsSection.appendChild(this.sections.extensions as UIElement);
 
         this.sectionsContainers = {
             resolution: resolutionSection,
             keepSize: keepSizeSection,
             dial: dialSection,
             background: backgroundSection,
-            extensions: null,
+            extensions: extensionsSection,
             advanced: null
         }
 
@@ -165,7 +183,7 @@ export class UIRenderer {
             keepSize: document.querySelector('#keepSize') as HTMLElement,
             dial: document.querySelector('#dial') as HTMLElement,
             background: document.querySelector('#background') as HTMLElement,
-            extensions: null,
+            extensions: document.querySelector('#extensions') as HTMLElement,
             advanced: null
         }
 
@@ -308,15 +326,16 @@ export class UIRenderer {
 
     private onSave() {
 
-        let { resolution, keepSize, DIAL, background, userAgent } = ipc.settings;
+        let { resolution, keepSize, DIAL, background, adBlock, userAgent } = ipc.settings;
 
         resolution = (this.sections.resolution as UISelectElement).value as any;
         keepSize.enabled = (this.sections.keepSize as UISelectElement).value as any;
         DIAL.enabled = ((this.sections.dial as UIElement[])[0] as UISelectElement).value as boolean;
         DIAL.name = ((this.sections.dial as UIElement[])[1] as UITextElement).value;
         background = (this.sections.keepSize as UISelectElement).value as boolean;
-        
-        const settings: DataModel = { resolution, keepSize, DIAL, background, userAgent};
+        adBlock = (this.sections.extensions as UISelectElement).value as boolean;
+
+        const settings: DataModel = { resolution, keepSize, DIAL, background, adBlock, userAgent};
         ipc.settings = settings;
 
     }

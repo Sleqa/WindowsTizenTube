@@ -70,6 +70,7 @@ export class Persistence {
             keepSize: this.data.keepSize,
             DIAL: this.data.DIAL,
             background: this.data.background,
+            adBlock: this.data.adBlock,
             userAgent: this.data.userAgent
         }
         const tostring = JSON.stringify(data);

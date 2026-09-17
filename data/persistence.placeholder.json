@@ -15,6 +15,7 @@
         "name": ""
     },
     "background": false,
+    "adBlock": true,
     "userAgent": {
         "useCustomUA": false,
         "customUA": ""

@@ -39,13 +39,13 @@ class Main {
                 await this.loadLanguage();
                 await this.loadSettings();
                 await this.checkUpdates();
-                const { DIAL, keepSize, resolution } = this.persistence.data;
+                const { DIAL, keepSize, resolution, adBlock } = this.persistence.data;
 
                 // Si DIAL está activo, instancia el servidor DIAL.
                 if(DIAL.enabled) this.dial = new Dial(DIAL.name);
-    
+
                 // Instancia el renderizador.
-                this.renderer = new Renderer({ keepSize, resolution });
+                this.renderer = new Renderer({ keepSize, resolution, adBlock });
                 app.emit('ready');
                 
             } catch(err: any) {
